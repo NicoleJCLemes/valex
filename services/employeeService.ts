@@ -60,3 +60,27 @@ export async function viewTransactionsService(id:number) {
 
     return data;
 }
+
+export async function changeCardStatusService(id:number, password: string) {
+
+    const cardExists = await findById(id);
+    cardExistsValidation(cardExists);
+    expirationDateValidation(cardExists);
+
+    if(!bcrypt.compareSync(password, cardExists.password)) {
+        throw {
+            type: "Forbidden",
+            message: "Your password is incorrect"
+        }
+    }
+
+    if(cardExists.isBlocked === true) {
+        await update(id, {
+            isBlocked: false
+        });
+    } else {
+        await update(id, {
+            isBlocked: true
+        });
+    };
+}

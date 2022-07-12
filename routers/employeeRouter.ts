@@ -3,9 +3,9 @@ import { viewTransactions, changeCardStatus, activateCard, shopping } from "../c
 
 const employeeRouter = Router();
 
-employeeRouter.get("/balance/:id", viewTransactions);
-employeeRouter.put("/status/:id", changeCardStatus);
-employeeRouter.put("/card/enable/:id", activateCard);
+employeeRouter.get("/balance/:id", viewTransactions); // foi
+employeeRouter.put("/status/:id", changeCardStatus); // foi
+employeeRouter.put("/card/enable/:id", activateCard); // foi
 employeeRouter.post("/shoppping", shopping);
 
 export default employeeRouter;
