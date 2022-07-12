@@ -25,14 +25,14 @@ $ npm run dev
 - PUT /status/:id
     - Rota para bloquear e desbloquear um cartão
     - body: {
-    "password": "123"
+    "password": "****"
     }
     
 - PUT /card/enable/:id
     - Rota para ativar um cartão
     - body: {
     "securityCode": "123",
-    "password": "123"
+    "password": "****"
     }
     
 - POST /recharge/:id
@@ -45,7 +45,7 @@ $ npm run dev
 - POST /shopping/:id
     - Rota para o funcionário comprar com o cartão
     - body: {
-    "password": "123",
+    "password": "****",
     "businessId": "1",
     "amount": 200
     }
