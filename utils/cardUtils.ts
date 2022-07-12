@@ -20,7 +20,7 @@ export function cardExistsValidation(cardExists: Card) {
 }
 
 export function expirationDateValidation(cardExists: Card) {
-    if (dayjs(cardExists.expirationDate).isBefore(dayjs())) {
+    if (dayjs(cardExists.expirationDate).isBefore(dayjs().format('MM-YYYY'))) {
         throw {
             type: "Forbidden",
             message: "Your card is expired"

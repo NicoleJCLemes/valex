@@ -16,6 +16,7 @@ export async function createCardService(apiKey: string, employeeId: number, type
     }
 
     const employeeExists = await findById(employeeId);
+    console.log(employeeExists)
     if(!employeeExists) {
         throw {
             type: "Not found",
@@ -24,7 +25,8 @@ export async function createCardService(apiKey: string, employeeId: number, type
     }
 
     const cardTypeExists = await findByTypeAndEmployeeId(type, employeeId);
-    if(!cardTypeExists) {
+    console.log(cardTypeExists);
+    if(cardTypeExists) {
         throw {
             type: "Conflict",
             message: "This employee already has this card type"

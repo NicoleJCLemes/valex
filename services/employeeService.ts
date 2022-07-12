@@ -3,6 +3,8 @@ import { cardExistsValidation, expirationDateValidation } from "../utils/cardUti
 import Cryptr from "cryptr";
 import bcrypt from "bcrypt";
 import { passwordValidation } from "../middlewares/schemasValidations.js";
+import { findByCardId } from "../repositories/paymentRepository.js";
+import { findByCardId as findByCardIdRecharge } from "../repositories/rechargeRepository.js";
 
 export async function activateCardService(securityCode: string, password:string, id:number) {
     
@@ -34,4 +36,27 @@ export async function activateCardService(securityCode: string, password:string,
         securityCode,
         password: bcrypt.hashSync(password, 10)
     });
+}
+
+export async function viewTransactionsService(id:number) {
+
+    const cardExists = await findById(id);
+    cardExistsValidation(cardExists);
+    
+    const transactions = await findByCardId(id);
+    const recharges = await findByCardIdRecharge(id);
+    let totalTransactions = 0;
+    let totalRecharges = 0;
+
+    transactions.forEach((transaction) => totalTransactions += transaction.amount);
+    recharges.forEach((recharge) => totalRecharges += recharge.amount);
+    console.log(totalTransactions, totalRecharges);
+
+    const data = {
+        balance: totalRecharges-totalTransactions,
+        transactions,
+        recharges
+    }
+
+    return data;
 }

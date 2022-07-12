@@ -1,5 +1,4 @@
-import { connection } from "../config/database.js";
-import dayjs from "dayjs";
+import connection from "../config/database.js";
 
 export interface Recharge {
   id: number;

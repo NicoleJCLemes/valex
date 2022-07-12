@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { TransactionTypes } from "../repositories/cardRepository.js";
+import { TransactionTypes, insert as insertCard } from "../repositories/cardRepository.js";
 import { createCardholderName, createCardService, rechargeCardService } from "../services/companyService.js";
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
@@ -12,7 +12,7 @@ export async function createCard(req: Request, res: Response) {
     const apiKey: string = req.headers["x-api-key"].toString();
 
     await createCardService(apiKey, employeeId, type);
-    const cardholderName = createCardholderName(employeeId);
+    const cardholderName = await createCardholderName(employeeId);
     const expirationDate = dayjs().add(5, 'years').format('MM/YYYY');
     const cvc = faker.finance.creditCardCVV();
     const cryptr = new Cryptr("#m1y2s3e4c5r6e7t8k9e0y$");
@@ -29,6 +29,8 @@ export async function createCard(req: Request, res: Response) {
         isBlocked: true,
         type
     }
+
+    await insertCard(card);
 
     res.sendStatus(201);
 }
