@@ -1,19 +1,21 @@
 import { Request, Response } from "express";
 import { TransactionTypes } from "../repositories/cardRepository.js";
-import { createCardholderName, createCardService } from "../services/companyService.js";
+import { createCardholderName, createCardService, rechargeCardService } from "../services/companyService.js";
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import Cryptr from "cryptr";
+import "../config/setup.js";
+import { insert } from "../repositories/rechargeRepository.js";
 
 export async function createCard(req: Request, res: Response) {
     const { employeeId, type }: {employeeId: number, type: TransactionTypes} = req.body;
     const apiKey: string = req.headers["x-api-key"].toString();
 
-    createCardService(apiKey, employeeId, type);
+    await createCardService(apiKey, employeeId, type);
     const cardholderName = createCardholderName(employeeId);
     const expirationDate = dayjs().add(5, 'years').format('MM/YYYY');
     const cvc = faker.finance.creditCardCVV();
-    const cryptr = new Cryptr(process.env.SECRET_KEY)
+    const cryptr = new Cryptr("#m1y2s3e4c5r6e7t8k9e0y$");
 
     const card = {
         employeeId,
@@ -21,16 +23,30 @@ export async function createCard(req: Request, res: Response) {
         cardholderName,
         securityCode: cryptr.encrypt(cvc),
         expirationDate,
-        password: 1,
+        password: null,
         isVirtual: false,
-        originalCardId: 1,
+        originalCardId: null,
         isBlocked: true,
         type
     }
 
-    res.send(card).status(201);
+    res.sendStatus(201);
 }
 
-export async function rechargeCard() {
+export async function rechargeCard(req: Request, res: Response) {
+    const { id } = req.params;
+    const { amount } = req.body;
+    const apiKey: string = req.headers["x-api-key"].toString();
 
+    await rechargeCardService(parseInt(id), apiKey, amount);
+
+    const recharge = {
+        cardId: parseInt(id),
+        amount: parseInt(amount),
+        timestamp: +Date.now
+    }
+
+    await insert(recharge);
+
+    res.sendStatus(201)
 }

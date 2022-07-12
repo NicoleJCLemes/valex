@@ -1,12 +1,13 @@
 import { connection } from "../config/database.js";
+import dayjs from "dayjs";
 
 export interface Recharge {
   id: number;
   cardId: number;
-  timestamp: Date;
+  timestamp: number;
   amount: number;
 }
-export type RechargeInsertData = Omit<Recharge, "id" | "timestamp">;
+export type RechargeInsertData = Omit<Recharge, "id">;
 
 export async function findByCardId(cardId: number) {
   const result = await connection.query<Recharge, [number]>(
@@ -18,10 +19,10 @@ export async function findByCardId(cardId: number) {
 }
 
 export async function insert(rechargeData: RechargeInsertData) {
-  const { cardId, amount } = rechargeData;
+  const { cardId, amount, timestamp } = rechargeData;
 
-  connection.query<any, [number, number]>(
-    `INSERT INTO recharges ("cardId", amount) VALUES ($1, $2)`,
-    [cardId, amount]
+  connection.query<any, [number, number, number]>(
+    `INSERT INTO recharges ("cardId", amount, timestamp) VALUES ($1, $2, $3)`,
+    [cardId, amount, timestamp]
   );
 }

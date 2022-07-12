@@ -1,15 +1,12 @@
-import { findByTypeAndEmployeeId, TransactionTypes } from "../repositories/cardRepository.js";
+import { findByTypeAndEmployeeId, TransactionTypes, findById as findCardById } from "../repositories/cardRepository.js";
 import { findByApiKey } from "../repositories/companyRepository.js";
 import { findById } from "../repositories/employeeRepository.js";
+import { apiKeyValidation } from "../utils/companyUtils.js";
+import dayjs from "dayjs";
 
 export async function createCardService(apiKey: string, employeeId: number, type: TransactionTypes) {
 
-    if(!apiKey) {
-        throw {
-            type: "Not found",
-            message: "API Key not found or invalid"
-        }
-    }
+    apiKeyValidation(apiKey);
 
     const companyExists = await findByApiKey(apiKey);
     if(!companyExists) {
@@ -52,4 +49,35 @@ export async function createCardholderName (employeeId:number) {
 
     return firstName + " " + middleLetters + lastName
     
+}
+
+export async function rechargeCardService (id:number, apiKey: string, amount: number) {
+
+    apiKeyValidation(apiKey);
+
+    const cardExists = await findCardById(id);
+    if(!cardExists) {
+        throw {
+            type: "Not found",
+            message: "No card was found"
+        }
+    } else if(cardExists.isBlocked === true) {
+        throw {
+            type: "Forbidden",
+            message: "You have to activate your card first"
+        }
+    } else if (dayjs(cardExists.expirationDate).isBefore(dayjs())) {
+        throw {
+            type: "Forbidden",
+            message: "Your card is expired"
+        }
+    }
+
+    if(amount < 0) {
+        throw {
+            type: "Forbidden",
+            message: "The amount must be greater than zero"
+        }
+    }
+
 }
