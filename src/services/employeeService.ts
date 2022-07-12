@@ -50,7 +50,6 @@ export async function viewTransactionsService(id:number) {
 
     transactions.forEach((transaction) => totalTransactions += transaction.amount);
     recharges.forEach((recharge) => totalRecharges += recharge.amount);
-    console.log(totalTransactions, totalRecharges);
 
     const data = {
         balance: totalRecharges-totalTransactions,
